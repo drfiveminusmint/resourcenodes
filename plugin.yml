@@ -1,0 +1,22 @@
+name: ResourceNodes
+main: io.github.drfiveminusmint.resourcenodes.ResourceNodes
+version: 0.2PRE-ALPHA
+api-version: 1.12.2
+author: some moron
+commands:
+  createnode:
+    description: Creates a resource node from a name and two positions. This is a test command, so don't expect to see it in the final version.
+    usage: /createnode [id] [x1] [y1] [z1] [x2] [y2] [z2]
+    permission: resourcenodes.createnode
+    permission-message: Your powers are insufficient to comprehend the nodes. Get memed, fucko.
+  nodereset:
+    description: Resets a specified resource node.
+    usage: /nodereset [id]
+    permission: resourcenodes.resetnode
+    permission-message: Your powers are insufficient to comprehend the nodes. Get memed, fucko.
+  nodes:
+    description: Main ResourceNodes command;
+    usage: /nodes (list)
+    permission: resourcenodes.nodes
+    permission-message: Your powers are insufficient to comprehend the nodes. Get memed, fucko.
+       
