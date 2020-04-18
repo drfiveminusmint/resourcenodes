@@ -4,10 +4,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 import io.github.drfiveminusmint.resourcenodes.ResourceNodes;
-import io.github.drfiveminusmint.resourcenodes.node.Node;
 
 public class NodeManager extends BukkitRunnable {
 	private List<Node> nodes = new ArrayList<Node>();
@@ -53,13 +51,13 @@ public class NodeManager extends BukkitRunnable {
 		return null;
 	}
 	
-	public void removeNodeByID (String id) {
+	public boolean removeNodeByID (String id) {
 		Node node = getNodeByID (id);
 		if (node == null) {
-			return;
+			return false;
 		}
 		nodes.remove(node);
-		
+		return true;
 	}
 	
 	public List<Node> getNodes() {
