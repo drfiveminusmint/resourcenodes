@@ -1,5 +1,6 @@
 package io.github.drfiveminusmint.resourcenodes.command;
 
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -68,13 +69,16 @@ public class CreateNodeCommand implements CommandExecutor {
 			return true;
 		}
 		
+		if(Material.getMaterial(args[2].toUpperCase()) == null) {
+			player.sendMessage(ChatUtils.chatPrefix + args[2].toUpperCase() + " is not a valid material.");
+		}
+		
 		String nodeName = args[1];
-		int oreID = Integer.parseInt(args[2]);
 		double density = Double.parseDouble(args[3]);
 		Vector pos1 = new Vector(Integer.parseInt(args[4]), Integer.parseInt(args[5]), Integer.parseInt(args[6]));
 		Vector pos2 = new Vector(Integer.parseInt(args[7]), Integer.parseInt(args[8]), Integer.parseInt(args[9]));
 		CuboidRegion c = new CuboidRegion(pos1,pos2);
-		Mine m = new Mine(nodeName, player.getWorld(), 1000*60, oreID, density);
+		Mine m = new Mine(nodeName, player.getWorld(), 1000*60, args[2].toUpperCase(), density);
 		if(!ResourceNodes.getInstance().getNodeManager().addNode(m)) {
 			player.sendMessage(ChatUtils.chatPrefix + "Something went wrong adding your node.");
 			return true;
@@ -87,17 +91,20 @@ public class CreateNodeCommand implements CommandExecutor {
 	}
 	public boolean createGardenCommand(Player player, String[] args) {
 		if (args.length < 10) {
-			player.sendMessage(ChatUtils.chatPrefix + "Usage: /createnode mine [id] [ore] [density] [x1] [y1] [z1] [x2] [y2] [z2]");
+			player.sendMessage(ChatUtils.chatPrefix + "Usage: /createnode mine [id] [plant] [density] [x1] [y1] [z1] [x2] [y2] [z2]");
 			return true;
 		}
 		
+		if(Material.getMaterial(args[2].toUpperCase()) == null) {
+			player.sendMessage(ChatUtils.chatPrefix + args[2].toUpperCase() + " is not a valid material.");
+		}
+		
 		String nodeName = args[1];
-		int plantID = Integer.parseInt(args[2]);
 		double density = Double.parseDouble(args[3]);
 		Vector pos1 = new Vector(Integer.parseInt(args[4]), Integer.parseInt(args[5]), Integer.parseInt(args[6]));
 		Vector pos2 = new Vector(Integer.parseInt(args[7]), Integer.parseInt(args[8]), Integer.parseInt(args[9]));
 		CuboidRegion c = new CuboidRegion(pos1,pos2);
-		Garden g = new Garden(nodeName, player.getWorld(), 1000*60, plantID, density);
+		Garden g = new Garden(nodeName, player.getWorld(), 1000*60, args[2].toUpperCase(), density);
 		if(!ResourceNodes.getInstance().getNodeManager().addNode(g)) {
 			player.sendMessage(ChatUtils.chatPrefix + "Something went wrong adding your node.");
 			return true;

@@ -15,7 +15,7 @@ public class Mine extends Node {
 	private double richness;
 	
 	@SuppressWarnings("deprecation")
-	public Mine(String s, World w, int r, int o, double v) {
+	public Mine(String s, World w, int r, String o, double v) {
 		super(s, w, r);
 		this.ore = Material.getMaterial(o);
 		this.richness = v;
@@ -40,8 +40,8 @@ public class Mine extends Node {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public int getOre() {
-		return ore.getId();
+	public String getOre() {
+		return ore.name();
 	}
 	
 	public double getRichness() {

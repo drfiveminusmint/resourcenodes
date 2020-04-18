@@ -99,15 +99,15 @@ public class ResourceNodes extends JavaPlugin {
     			case "io.github.drfiveminusmint.resourcenodes.node.Quarry":
     				break;
     			case "io.github.drfiveminusmint.resourcenodes.node.Mine":
-    				writer.write("    ore: "+Integer.toString(((Mine) n).getOre()));
+    				writer.write("    ore: " + ((Mine) n).getOre());
         			writer.newLine();
-        			writer.write("    richness: "+Double.toString(((Mine) n).getRichness()));
+        			writer.write("    richness: " + Double.toString(((Mine) n).getRichness()));
         			writer.newLine();
         			break;
     			case "io.github.drfiveminusmint.resourcenodes.node.Garden":
-    				writer.write("    plant: "+Integer.toString(((Garden) n).getPlant()));
+    				writer.write("    plant: " + ((Garden) n).getPlant());
         			writer.newLine();
-        			writer.write("    fertility: "+Double.toString(((Garden) n).getFertility()));
+        			writer.write("    fertility: " + Double.toString(((Garden) n).getFertility()));
         			writer.newLine();
         			break;
         		default:
@@ -160,10 +160,10 @@ public class ResourceNodes extends JavaPlugin {
             				n = new Quarry(entry.getKey(), w, (int)nodeMap.get("interval"));
             				break;
             			case "io.github.drfiveminusmint.resourcenodes.node.Mine":
-            				n = new Mine(entry.getKey(), w, (int)nodeMap.get("interval"), (int)nodeMap.get("ore"), (double)nodeMap.get("richness"));
+            				n = new Mine(entry.getKey(), w, (int)nodeMap.get("interval"), ((String)nodeMap.get("ore")).toUpperCase(), (double)nodeMap.get("richness"));
             				break;
             			case "io.github.drfiveminusmint.resourcenodes.node.Garden":
-            				n = new Garden(entry.getKey(), w, (int)nodeMap.get("interval"), (int)nodeMap.get("plant"), (double)nodeMap.get("fertility"));
+            				n = new Garden(entry.getKey(), w, (int)nodeMap.get("interval"), ((String)nodeMap.get("plant")).toUpperCase(), (double)nodeMap.get("fertility"));
             				break;	
             			default:
             				n = new Node(entry.getKey(), w, (int)nodeMap.get("interval"));

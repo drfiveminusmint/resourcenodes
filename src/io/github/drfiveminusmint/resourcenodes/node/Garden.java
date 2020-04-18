@@ -15,8 +15,7 @@ public class Garden extends Node {
 	private Material plant;
 	private double fertility;
 
-	@SuppressWarnings("deprecation")
-	public Garden(String s, World w, int r, int p, double f) {
+	public Garden(String s, World w, int r, String p, double f) {
 		super(s, w, r);
 		this.plant = Material.getMaterial(p);
 		this.fertility = f;
@@ -42,9 +41,8 @@ public class Garden extends Node {
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
-	public int getPlant() {
-		return plant.getId();
+	public String getPlant() {
+		return plant.name();
 	}
 	
 	public double getFertility() {
