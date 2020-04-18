@@ -38,6 +38,11 @@ public class ResourceNodes extends JavaPlugin {
     	this.getCommand("nodes").setExecutor(new NodesCommand());
     	
     	try {
+    		File dataFolder = new File(this.getDataFolder().getAbsolutePath());
+    		if(!dataFolder.exists()) {
+    			dataFolder.mkdirs();
+    		}
+    		
     		File nodesFile = new File(this.getDataFolder().getAbsolutePath() + "/nodes.yml");
     		if (!nodesFile.exists()) {
     			nodesFile = File.createTempFile("nodes", ".yml", new File(this.getDataFolder().getAbsolutePath()));
@@ -184,6 +189,8 @@ public class ResourceNodes extends JavaPlugin {
     
     public boolean deleteNodeFromFile (Node n) {
     	try {
+    		File schemFile = new File(ResourceNodes.getInstance().getDataFolder().getAbsolutePath() + "/NodeSchematics/"+n.getID()+".schematic");
+    		schemFile.delete();
     		File nodesFile = new File(ResourceNodes.getInstance().getDataFolder().getAbsolutePath() + "/nodes.yml");
     		String tempNodesPath = ResourceNodes.getInstance().getDataFolder().getAbsolutePath() + "/tempnodes.yml";
     		File tempNodesFile = new File(tempNodesPath);
