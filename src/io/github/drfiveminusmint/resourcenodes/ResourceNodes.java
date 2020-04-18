@@ -37,6 +37,22 @@ public class ResourceNodes extends JavaPlugin {
     	this.getCommand("createnode").setExecutor(new CreateNodeCommand());
     	this.getCommand("nodes").setExecutor(new NodesCommand());
     	
+    	try {
+    		File nodesFile = new File(this.getDataFolder().getAbsolutePath() + "/nodes.yml");
+    		if (!nodesFile.exists()) {
+    			nodesFile = File.createTempFile("nodes", ".yml", new File(this.getDataFolder().getAbsolutePath()));
+    			FileWriter f = new FileWriter(nodesFile, true);
+        		BufferedWriter writer = new BufferedWriter(f);
+        		writer.write("Nodes:");
+        		writer.newLine();
+        		writer.close();
+        		boolean success = nodesFile.renameTo(new File(this.getDataFolder().getAbsolutePath() + "/nodes.yml"));
+        		nodesFile.delete();
+    		}
+    	} catch (IOException e) {
+    		e.printStackTrace();
+    	}
+    	
     	fixFileSpacing();
     	loadNodes(true);
         
@@ -127,33 +143,35 @@ public class ResourceNodes extends JavaPlugin {
         if (input != null) {
             Map data = new Yaml().loadAs(input, Map.class);
             Map<String, Map<String, ?>> nodesMap = (Map<String, Map<String, ?>>) data.get("nodes");
-            for (Map.Entry<String, Map<String, ?>> entry : nodesMap.entrySet()) {
-                Map<String,Object> nodeMap = (Map<String, Object>) entry.getValue();
-                World w = Bukkit.getWorld((String)nodeMap.get("world"));
-                if (w == null) {
-                	continue;
-                }
-                if (nodeManager.getNodeByID(entry.getKey()) != null) {
-                	continue;
-                }
-                Node n;
-                String s = (String)nodeMap.getOrDefault("type", "node");
-                switch(s) {
-                	case "io.github.drfiveminusmint.resourcenodes.node.Quarry":
-                		n = new Quarry(entry.getKey(), w, (int)nodeMap.get("interval"));
-                		break;
-                	case "io.github.drfiveminusmint.resourcenodes.node.Mine":
-                		n = new Mine(entry.getKey(), w, (int)nodeMap.get("interval"), (int)nodeMap.get("ore"), (double)nodeMap.get("richness"));
-                		break;
-                	case "io.github.drfiveminusmint.resourcenodes.node.Garden":
-                		n = new Garden(entry.getKey(), w, (int)nodeMap.get("interval"), (int)nodeMap.get("plant"), (double)nodeMap.get("fertility"));
-                		break;	
-                	default:
-                		n = new Node(entry.getKey(), w, (int)nodeMap.get("interval"));
-                		break;
-                }
-                
-                nodeManager.getNodes().add(n);
+            if (nodesMap != null) {            	
+            	for (Map.Entry<String, Map<String, ?>> entry : nodesMap.entrySet()) {
+            		Map<String,Object> nodeMap = (Map<String, Object>) entry.getValue();
+            		World w = Bukkit.getWorld((String)nodeMap.get("world"));
+            		if (w == null) {
+            			continue;
+            		}
+            		if (nodeManager.getNodeByID(entry.getKey()) != null) {
+            			continue;
+            		}
+            		Node n;
+            		String s = (String)nodeMap.getOrDefault("type", "node");
+            		switch(s) {
+            			case "io.github.drfiveminusmint.resourcenodes.node.Quarry":
+            				n = new Quarry(entry.getKey(), w, (int)nodeMap.get("interval"));
+            				break;
+            			case "io.github.drfiveminusmint.resourcenodes.node.Mine":
+            				n = new Mine(entry.getKey(), w, (int)nodeMap.get("interval"), (int)nodeMap.get("ore"), (double)nodeMap.get("richness"));
+            				break;
+            			case "io.github.drfiveminusmint.resourcenodes.node.Garden":
+            				n = new Garden(entry.getKey(), w, (int)nodeMap.get("interval"), (int)nodeMap.get("plant"), (double)nodeMap.get("fertility"));
+            				break;	
+            			default:
+            				n = new Node(entry.getKey(), w, (int)nodeMap.get("interval"));
+            				break;
+            		}
+            	
+            		nodeManager.getNodes().add(n);
+            	}
             }   
 
         }
@@ -216,6 +234,7 @@ public class ResourceNodes extends JavaPlugin {
     		return false;
     	}
     }
+    
     
     public void fixFileSpacing () {
     	try {
