@@ -10,10 +10,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -48,10 +48,10 @@ public class ResourceNodes extends JavaPlugin {
     			nodesFile = File.createTempFile("nodes", ".yml", new File(this.getDataFolder().getAbsolutePath()));
     			FileWriter f = new FileWriter(nodesFile, true);
         		BufferedWriter writer = new BufferedWriter(f);
-        		writer.write("Nodes:");
+        		writer.write("nodes:");
         		writer.newLine();
         		writer.close();
-        		boolean success = nodesFile.renameTo(new File(this.getDataFolder().getAbsolutePath() + "/nodes.yml"));
+        		nodesFile.renameTo(new File(this.getDataFolder().getAbsolutePath() + "/nodes.yml"));
         		nodesFile.delete();
     		}
     	} catch (IOException e) {
@@ -112,9 +112,27 @@ public class ResourceNodes extends JavaPlugin {
     			case "io.github.drfiveminusmint.resourcenodes.node.Garden":
     				writer.write("    plant: " + ((Garden) n).getPlant());
         			writer.newLine();
-        			writer.write("    fertility: " + Double.toString(((Garden) n).getFertility()));
+        			writer.write("    richness: " + Double.toString(((Garden) n).getRichness()));
         			writer.newLine();
         			break;
+    			case "io.github.drfiveminusmint.resourcenodes.node.MultiMine":
+    				writer.write("    ores:");
+    				writer.newLine();
+    				for(String ore : ((MultiMine)n).getOres()) {
+    					writer.write("      - \'"+ ore + "\'");
+    					writer.newLine();
+    				}
+    				writer.write("    richness: " + Double.toString(((MultiMine) n).getRichness()));
+    				writer.newLine();
+    			case "io.github.drfiveminusmint.resourcenodes.node.MultiGarden":
+    				writer.write("    plants:");
+    				writer.newLine();
+    				for(String plant : ((MultiGarden)n).getPlants()) {
+    					writer.write("      - \'"+ plant + "\'");
+    					writer.newLine();
+    				}
+    				writer.write("    richness: " + Double.toString(((MultiGarden) n).getRichness()));
+    				writer.newLine();
         		default:
         			break;
     		}
@@ -145,10 +163,13 @@ public class ResourceNodes extends JavaPlugin {
         } catch (FileNotFoundException e) {
             input = null;
         }
+        
         if (input != null) {
+        	
             Map data = new Yaml().loadAs(input, Map.class);
             Map<String, Map<String, ?>> nodesMap = (Map<String, Map<String, ?>>) data.get("nodes");
-            if (nodesMap != null) {            	
+            if (nodesMap != null) {  
+            	logger.log(Level.INFO, "TEST TEST");
             	for (Map.Entry<String, Map<String, ?>> entry : nodesMap.entrySet()) {
             		Map<String,Object> nodeMap = (Map<String, Object>) entry.getValue();
             		World w = Bukkit.getWorld((String)nodeMap.get("world"));
@@ -168,8 +189,16 @@ public class ResourceNodes extends JavaPlugin {
             				n = new Mine(entry.getKey(), w, (int)nodeMap.get("interval"), ((String)nodeMap.get("ore")).toUpperCase(), (double)nodeMap.get("richness"));
             				break;
             			case "io.github.drfiveminusmint.resourcenodes.node.Garden":
-            				n = new Garden(entry.getKey(), w, (int)nodeMap.get("interval"), ((String)nodeMap.get("plant")).toUpperCase(), (double)nodeMap.get("fertility"));
+            				n = new Garden(entry.getKey(), w, (int)nodeMap.get("interval"), ((String)nodeMap.get("plant")).toUpperCase(), (double)nodeMap.get("richness"));
             				break;	
+            			case "io.github.drfiveminusmint.resourcenodes.node.MultiMine":
+            				List<String> l = (List<String>)nodeMap.get("ores");
+            				n = new MultiMine(entry.getKey(), w, (int)nodeMap.get("interval"), l, (double)nodeMap.get("richness"));
+            				break;
+            			case "io.github.drfiveminusmint.resourcenodes.node.MultiGarden":
+            				List<String> p = (List<String>)nodeMap.get("plants");
+            				n = new MultiGarden(entry.getKey(), w, (int)nodeMap.get("interval"), p, (double)nodeMap.get("richness"));
+            				break;
             			default:
             				n = new Node(entry.getKey(), w, (int)nodeMap.get("interval"));
             				break;
@@ -177,6 +206,8 @@ public class ResourceNodes extends JavaPlugin {
             	
             		nodeManager.getNodes().add(n);
             	}
+            	
+            	nodeManager.addNode(new Quarry("badtest", Bukkit.getWorld("world"), 0));
             }   
 
         }
@@ -187,10 +218,12 @@ public class ResourceNodes extends JavaPlugin {
         nodeManager.runTaskTimer(this, 0, 20*60);
     }
     
-    public boolean deleteNodeFromFile (Node n) {
+    public boolean deleteNodeFromFile (Node n, boolean deleteschem) {
     	try {
-    		File schemFile = new File(ResourceNodes.getInstance().getDataFolder().getAbsolutePath() + "/NodeSchematics/"+n.getID()+".schematic");
-    		schemFile.delete();
+    		if (deleteschem) {
+    			File schemFile = new File(ResourceNodes.getInstance().getDataFolder().getAbsolutePath() + "/NodeSchematics/"+n.getID()+".schematic");
+    			schemFile.delete();
+    		}
     		File nodesFile = new File(ResourceNodes.getInstance().getDataFolder().getAbsolutePath() + "/nodes.yml");
     		String tempNodesPath = ResourceNodes.getInstance().getDataFolder().getAbsolutePath() + "/tempnodes.yml";
     		File tempNodesFile = new File(tempNodesPath);
@@ -233,7 +266,7 @@ public class ResourceNodes extends JavaPlugin {
     		}
     		bufferedReader.close();
     		wr.close();
-    		boolean success = tempNodesFile.renameTo(nodesFile);
+    		tempNodesFile.renameTo(nodesFile);
     		tempNodesFile.delete();
     		return true;
     	} catch (IOException e) {
@@ -271,7 +304,7 @@ public class ResourceNodes extends JavaPlugin {
     		}
     		bufferedReader.close();
     		wr.close();
-    		boolean success = tempNodesFile.renameTo(nodesFile);
+    		tempNodesFile.renameTo(nodesFile);
     		tempNodesFile.delete();
     		
     	} catch (IOException e) {

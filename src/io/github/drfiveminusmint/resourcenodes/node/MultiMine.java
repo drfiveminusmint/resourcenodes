@@ -3,6 +3,7 @@ package io.github.drfiveminusmint.resourcenodes.node;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -12,16 +13,27 @@ import com.sk89q.worldedit.BlockVector;
 import io.github.drfiveminusmint.resourcenodes.ResourceNodes;
 import io.github.drfiveminusmint.resourcenodes.util.EnumUtils.MaterialAction;
 
-public class Mine extends Node {
+public class MultiMine extends Node {
 	
-	private Material ore;
+	private List<Material> oreMaterials = new ArrayList<Material>();
 	private double richness;
 	
-	public Mine(String s, World w, int r, String o, double v) {
-		super(s, w, r);
-		this.ore = Material.getMaterial(o);
-		this.richness = v;
-		// TODO Auto-generated constructor stub
+	public MultiMine(String id, World w, int r, List<String> o, double d) {
+		super(id, w, r);
+		this.richness = d;
+		for (String s : o) {
+			if (Material.getMaterial(s) != null) {
+				this.oreMaterials.add(Material.getMaterial(s));
+			}
+		}
+	}
+	
+	public List<String> getOres() {
+		List<String> ret = new ArrayList<String>();
+		for (Material m : oreMaterials) {
+			ret.add(m.name());
+		}
+		return ret;
 	}
 	
 	@Override
@@ -36,32 +48,36 @@ public class Mine extends Node {
 			}
 			Random random = new Random();
 			if (random.nextInt((int)(1/richness)) == 0) {
-				loc.getBlock().setType(ore);
+				Material material = oreMaterials.get(random.nextInt(oreMaterials.size()));
+				loc.getBlock().setType(material);
 			}
 		}
-	}
-	
-	@Override
-	public boolean modifyMaterials(MaterialAction a, Material b) {
-		if(a != MaterialAction.CHANGE) {
-			return false;
-		}
-		this.ore = b;
-		return true;
 	}
 	
 	@Override
 	public List<String> getData() {
 		List<String> ret = new ArrayList<String>();
 		ret.add("Name: " + id);
-		ret.add("Ore: " + ore.name());
+		ret.add("Ores: ");
+		for (Material m : oreMaterials) {
+			ret.add(m.name());
+		}
 		ret.add("Richness: " + Double.toString(richness));
 		ret.add("Reset Interval: " + Integer.toString(resetInterval));
 		return ret;
 	}
 	
-	public String getOre() {
-		return ore.name();
+	@Override
+	public boolean modifyMaterials(MaterialAction a, Material b) {
+		String s = a.toString();
+		switch(s) {
+			case "ADD":
+				return oreMaterials.add(b);
+			case "REMOVE":
+				return oreMaterials.remove(b);
+			default:
+				return false;
+		}
 	}
 	
 	@Override

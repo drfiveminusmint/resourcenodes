@@ -1,6 +1,5 @@
 package io.github.drfiveminusmint.resourcenodes.node;
 
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
@@ -45,7 +44,6 @@ public class NodeRepair {
 			BlockArrayClipboard clipboard = new BlockArrayClipboard(c);
 			clipboard.setOrigin(origin);
 			Extent source = WorldEdit.getInstance().getEditSessionFactory().getEditSession(weWorld, -1);
-			Extent destination = clipboard;
 			ForwardExtentCopy copy = new ForwardExtentCopy(source, c, clipboard.getOrigin(), clipboard, clipboard.getOrigin());
 			Operations.complete(copy);
 			ClipboardWriter writer = ClipboardFormat.SCHEMATIC.getWriter(new FileOutputStream(nodeSaveFile, false));
@@ -71,7 +69,6 @@ public class NodeRepair {
 		}
 		com.sk89q.worldedit.world.World weWorld = new BukkitWorld(world);
 		WorldData worldData = weWorld.getWorldData();
-		Vector origin = new Vector(0,0,0);
 		Clipboard clipboard;
 
 		
@@ -79,7 +76,6 @@ public class NodeRepair {
 			ClipboardFormat format = ClipboardFormat.findByFile(nodeSaveFile);
 			ClipboardReader reader = format.getReader(new FileInputStream(nodeSaveFile));
 		    clipboard = reader.read(worldData);
-		    EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(weWorld, -1);
 		    Operation operation = new ClipboardHolder(clipboard, worldData)
 		            .createPaste(weWorld, worldData)
 		            .build();
@@ -104,7 +100,6 @@ public class NodeRepair {
 		}
 		com.sk89q.worldedit.world.World weWorld = new BukkitWorld(world);
 		WorldData worldData = weWorld.getWorldData();
-		Vector origin = new Vector(0,0,0);
 		Clipboard clipboard;
 
 		try {
